@@ -1,33 +1,38 @@
 from TuringMachine import TuringMachine
 
+# PROBLEMA DO GATO E DO RATO
+# Teremos uma fita do gato e outra do rato ou contendo a sequência de ações
+# Gerar as transições baseados no grafo
 
-transitions = {'q0': {
-                        'a': {'next_state': 'q1', 'symbol': 'X', 'direction': 'R'},
-                        'Y': {'next_state': 'q3', 'symbol': 'Y', 'direction': 'R'}
-                     },
-               'q1': {
-                        'a': {'next_state': 'q1', 'symbol': 'a', 'direction': 'R'},
-                        'Y': {'next_state': 'q1', 'symbol': 'Y', 'direction': 'R'},
-                        'b': {'next_state': 'q2', 'symbol': 'Y', 'direction': 'L'}
-                     },
-               'q2': {
-                        'a': {'next_state': 'q2', 'symbol': 'a', 'direction': 'L'},
-                        'Y': {'next_state': 'q2', 'symbol': 'Y', 'direction': 'L'},
-                        'X': {'next_state': 'q0', 'symbol': 'X', 'direction': 'R'}
-                     },
-               'q3': {
-                        '$': {'next_state': 'q4', 'symbol': '$', 'direction': 'L'},
-                        'Y': {'next_state': 'q3', 'symbol': 'Y', 'direction': 'R'}
-                     },
-               }
+cat_mouse_transitions = {
+                    'q0': {
+                        '11': {'next_state': 'qReject', 'symbol': None, 'direction': 'R'},
+                        '22': {'next_state': 'qReject', 'symbol': None, 'direction': 'R'},
+                        '12': {'next_state': '12', 'symbol': None, 'direction': 'R'},
+                        '21': {'next_state': '21', 'symbol': None, 'direction': 'R'},
+                        '$$': {'next_state': 'qAccept', 'symbol': None, 'direction': 'R'},
+                    },
+                    '12': {
+                        '11': {'next_state': 'qReject', 'symbol': None, 'direction': 'R'},
+                        '12': {'next_state': '12', 'symbol': None, 'direction': 'R'},
+                        '21': {'next_state': '21', 'symbol': None, 'direction': 'R'},
+                        '22': {'next_state': '2qReject1', 'symbol': None, 'direction': 'R'},
+                        '$$': {'next_state': 'qAccept', 'symbol': None, 'direction': 'R'},
+                    },
+                    '21': {
+                        '21': {'next_state': '21', 'symbol': None, 'direction': 'R'},
+                        '11': {'next_state': 'qReject', 'symbol': None, 'direction': 'R'},
+                        '$$': {'next_state': 'qAccept', 'symbol': None, 'direction': 'R'},
+                    },
+                }
 
-M1 = TuringMachine(tape='aaaaabbbbb$',
-                   states=['q0', 'q1', 'q2', 'q3', 'q4'],
-                   initial_state='q0',
-                   accept_state='q4',
-                   reject_state='q5',
-                   transitions=transitions,
-                   tape_alphabet={'a', 'b', 'X', 'Y', '$'},
-                   input_alphabet={'a', 'b'})
+CatMouseMachine = TuringMachine(tapes=['1121$', '2211$'],
+                                states=['q0', '12', '21', 'qAccept', 'qReject'],
+                                initial_state='q0',
+                                accept_state='qAccept',
+                                reject_state='qReject',
+                                transitions=cat_mouse_transitions,
+                                tape_alphabet={'11', '22', '12', '21', '$$'},
+                                input_alphabet={'11', '22', '12', '21'})
 
-print(M1.run())
+print(CatMouseMachine.run())

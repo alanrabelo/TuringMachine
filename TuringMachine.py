@@ -25,7 +25,7 @@ class StateType(Enum):
 
 class TuringMachine:
 
-    def __init__(self, tape, states, initial_state, accept_state,
+    def __init__(self, tapes, states, initial_state, accept_state,
                  reject_state, transitions, tape_alphabet, input_alphabet):
 
         if not input_alphabet.issubset(tape_alphabet):
@@ -37,7 +37,7 @@ class TuringMachine:
         if accept_state == reject_state:
             raise InitialAndFinalStatesAreEqualError("Initial and final states are equal. Not possible in a Machine")
 
-        self.tape = list(tape)
+        self.tapes = [list(tape) for tape in tapes]
         self.states = states
         self.input_alphabet = input_alphabet
         self.tape_alphabet = tape_alphabet
@@ -53,7 +53,7 @@ class TuringMachine:
 
         while (self.current_state is not self.accept_state) and (self.current_state is not self.reject_state):
 
-            input = self.tape[self.current_index]
+            input = ''.join([tape[self.current_index] for tape in self.tapes])
 
             if self.current_state not in self.transitions or input not in self.transitions[self.current_state]:
                 return 'Rejected'
@@ -71,7 +71,7 @@ class TuringMachine:
             if tape_direction is 'L' and self.current_index is not 0:
                 self.current_index -= 1
 
-            if tape_direction is 'R' and self.current_index < len(self.tape)-1:
+            if tape_direction is 'R' and self.current_index < len(self.tapes[0])-1:
                 self.current_index += 1
 
             self.current_state = next_state
