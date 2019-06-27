@@ -25,9 +25,10 @@ class StateType(Enum):
 
 class TuringMachine:
 
-    def __init__(self, tape, states, initial_state, accept_state, reject_state, transitions, tape_alphabet, input_alphabet):
+    def __init__(self, tape, states, initial_state, accept_state,
+                 reject_state, transitions, tape_alphabet, input_alphabet):
 
-        if input_alphabet not in tape_alphabet:
+        if not input_alphabet.issubset(tape_alphabet):
             raise InputNotInTapeAlphabetError("Input alphabet must be a subset of tape alphabet")
 
         if ' ' in input_alphabet:
@@ -36,7 +37,7 @@ class TuringMachine:
         if accept_state == reject_state:
             raise InitialAndFinalStatesAreEqualError("Initial and final states are equal. Not possible in a Machine")
 
-        self.tape = tape
+        self.tape = list(tape)
         self.states = states
         self.input_alphabet = input_alphabet
         self.tape_alphabet = tape_alphabet
@@ -50,10 +51,31 @@ class TuringMachine:
 
     def run(self):
 
-        while (self.current_state is not self.accept_state) or (self.current_state is not self.reject_state):
-            # Lógica da máquina aqui
-            print('LOL')
+        while (self.current_state is not self.accept_state) and (self.current_state is not self.reject_state):
 
-        print("Accepted" if self.current_state.state_type == StateType.accept else "Rejected")
+            input = self.tape[self.current_index]
+
+            if self.current_state not in self.transitions or input not in self.transitions[self.current_state]:
+                return 'Rejected'
+
+            transition = self.transitions[self.current_state][input]
+
+            next_state = transition['next_state']
+            symbol_to_write = transition['symbol']
+            tape_direction = transition['direction']
+
+            if symbol_to_write is not None:
+
+                self.tape[self.current_index] = symbol_to_write
+
+            if tape_direction is 'L' and self.current_index is not 0:
+                self.current_index -= 1
+
+            if tape_direction is 'R' and self.current_index < len(self.tape)-1:
+                self.current_index += 1
+
+            self.current_state = next_state
+
+        return "Accepted" if self.current_state == self.accept_state else "Rejected"
 
 
