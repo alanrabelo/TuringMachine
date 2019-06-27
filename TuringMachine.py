@@ -61,12 +61,7 @@ class TuringMachine:
             transition = self.transitions[self.current_state][input]
 
             next_state = transition['next_state']
-            symbol_to_write = transition['symbol']
             tape_direction = transition['direction']
-
-            if symbol_to_write is not None:
-
-                self.tape[self.current_index] = symbol_to_write
 
             if tape_direction is 'L' and self.current_index is not 0:
                 self.current_index -= 1
