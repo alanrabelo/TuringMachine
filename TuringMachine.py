@@ -46,14 +46,18 @@ class TuringMachine:
         self.accept_state = accept_state
         self.reject_state = reject_state
         self.current_state = self.initial_state
-        self.current_index = 0
+        self.current_index = [0] * len(tapes)
 
 
     def run(self):
 
         while (self.current_state is not self.accept_state) and (self.current_state is not self.reject_state):
 
-            input = ''.join([tape[self.current_index] for tape in self.tapes])
+            input = ''
+
+            for index, tape in enumerate(self.tapes):
+
+                input += tape[self.current_index[index]]
 
             if self.current_state not in self.transitions or input not in self.transitions[self.current_state]:
                 return 'Rejected'
@@ -61,13 +65,25 @@ class TuringMachine:
             transition = self.transitions[self.current_state][input]
 
             next_state = transition['next_state']
+
             tape_direction = transition['direction']
 
-            if tape_direction is 'L' and self.current_index is not 0:
-                self.current_index -= 1
+            if 'word' in transition:
 
-            if tape_direction is 'R' and self.current_index < len(self.tapes[0])-1:
-                self.current_index += 1
+                word_to_write = transition['word']
+
+                for index, value in enumerate(self.tapes):
+
+                    if word_to_write[index]:
+                        value[self.current_index[index]] = word_to_write[index]
+
+            for index, direction in enumerate(tape_direction):
+
+                if direction is 'L' and self.current_index[index] is not 0:
+                    self.current_index[index] -= 1
+
+                if direction is 'R' and self.current_index[index] < len(self.tapes[index])-1:
+                    self.current_index[index] += 1
 
             self.current_state = next_state
 
